@@ -851,6 +851,11 @@ function getData(dataFormat) {
       str.push(fd.get(thisKey))
     });
     return str.join("\t")
+  } else if (dataFormat == "csv") {
+    Array.from(fd.keys()).forEach(thisKey => {
+      str.push(fd.get(thisKey))
+    });
+    return str.join(",")
   } else {
     return "unsupported dataFormat"
   }
@@ -1383,6 +1388,22 @@ function displayData(){
 function copyData(){
   navigator.clipboard.writeText(getData(dataFormat));
   document.getElementById('copyButton').setAttribute('value','Copied');
+}
+
+function downloadCSV() {
+  const formFields = Array.from(document.forms.scoutingForm);
+
+  const match = formFields.find((field) => field.name == "m").value ?? "000";
+  const team = formFields.find((field) => field.name == "t").value ?? "0";
+  const scouter = formFields.find((field) => field.name == "s").value ?? "Unknown";
+
+  const data = getData("csv");
+  const blob = new Blob([data], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.download = `${match}_${team}_${scouter}.csv`;
+  link.href = url;
+  link.click();
 }
 
 window.onload = function () {
